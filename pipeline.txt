@@ -43,13 +43,13 @@ pipeline {
         }
 		
 		
-		// stage ('Helm Deploy') {
-        //  steps {
-          //  script {
-            //     helm upgrade --install my-release ${HELM_CHART_PATH} --set image.repository=${IMAGE_NAME} --set image.tag=${env.BUILD_ID}
-           //     }
-         //   }
-      //  }
+		 stage ('Helm Deploy') {
+          steps {
+            script {
+                 helm upgrade --install my-release ${HELM_CHART_PATH} --set myimage.reponame=${IMAGE_NAME} --set myimage.repotag=${env.BUILD_ID}
+               }
+            }
+        }
 
     }
 
