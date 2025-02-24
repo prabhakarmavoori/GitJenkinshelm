@@ -7,6 +7,7 @@ pipeline {
         REPO_NAME = 'gitjenkinshelm'     // Your GitHub repository name
         IMAGE_NAME = "${GITHUB_REGISTRY}/${GITHUB_USER}/${REPO_NAME}"  // Full image name
         //GITHUB_TOKEN = credentials('git-token') // GitHub Personal Access Token stored in Jenkins
+		HELM_CHART_NAME = 'praGitJenkinshelm'
     }
 
     stages {
@@ -46,7 +47,7 @@ pipeline {
 		 stage ('Helm Deploy') {
           steps {
             script {
-                 helm upgrade --install my-release ${HELM_CHART_PATH} --set myimage.reponame=${IMAGE_NAME} --set myimage.repotag=${env.BUILD_ID}
+                 helm upgrade --install my-release ${HELM_CHART_NAME} --set myimage.reponame=${IMAGE_NAME} --set myimage.repotag=${env.BUILD_ID}
                }
             }
         }
