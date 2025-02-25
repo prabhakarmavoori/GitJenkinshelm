@@ -9,9 +9,10 @@ appname: prabhakar
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 myimage:
-  #myfullreponame: ghcr.io/prabhakarmavoori/gitjenkinshelm :latest
-  reponame: ghcr.io/prabhakarmavoori/gitjenkinshelm 
-  repotag: latest
+  myfullreponame: ""
+  #myfullreponame: ghcr.io/prabhakarmavoori/gitjenkinshelm:latest
+  #reponame: "" -- ghcr.io/prabhakarmavoori/gitjenkinshelm
+  #repotag: "" -- latest
   Whentopullimage: Always
   containerandtargetPort: 3000
   appcontainername: prabhakar-container
@@ -22,3 +23,16 @@ myservice:
   port: 80
   servicename: prabhakar-service
   myprotocol: TCP
+
+myscret:
+  myreposecretname: github-docker-secret
+
+dockerConfig:
+  auths:
+    "ghcr.io": 
+       auth: "cHJhYmhha2FybWF2b29yaTpnaHBfYVNkMlZ4Z3ZaQjVCNFlEbTdxQVpUcjJkNWxjM2hLM1dvNzda"
+
+
+#[Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("username:password"))
+
+

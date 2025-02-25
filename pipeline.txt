@@ -2,12 +2,18 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_REGISTRY = 'ghcr.io'            // GitHub Container Registry URL
         GITHUB_USER = 'prabhakarmavoori'   // Your GitHub username
-        REPO_NAME = 'gitjenkinshelm'     // Your GitHub repository name
-        IMAGE_NAME = "${GITHUB_REGISTRY}/${GITHUB_USER}/${REPO_NAME}"  // Full image name
-        //GITHUB_TOKEN = credentials('git-token') // GitHub Personal Access Token stored in Jenkins
-		HELM_CHART_NAME = 'praGitJenkinshelm'
+        GIT_CREDENTIALS =  'git-token'  // Replace with your credentials ID
+        REPO_NAME = 'gitjenkinshelm'     // Your GitHub repository name   
+        
+        GITHUB_REGISTRY = 'ghcr.io'            // GitHub Container Registry URL
+        IMAGE_NAME = "${GITHUB_REGISTRY}/${GITHUB_USER}/${REPO_NAME}:${env.BUILD_ID}"  // Full image name
+        
+        HELM_RELEASE_NAME = 'prabhakar-release'
+        HELM_NAMESPACE = 'default'
+        CHART_PATH = 'G:/Practise/GitJenkinshelm/praGitJenkinshelm'
+        
+        KUBECONFIG = 'C:/Users/JANAKI PRIYA/.kube/config'
     }
 
     stages {
@@ -15,8 +21,12 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout code from GitHub repository
-                //git branch: 'main', url: "https://github.com/${GITHUB_USER}/${REPO_NAME}.git"
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'git-token', url: "https://github.com/${GITHUB_USER}/${REPO_NAME}.git"]])
+                git (
+                    url: "https://github.com/${GITHUB_USER}/${REPO_NAME}.git",
+                    branch: 'main',
+                    credentialsId: "${GIT_CREDENTIALS}"
+                    )
+                
             }
         }
         
@@ -24,7 +34,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker image
-                    def image= docker.build("${IMAGE_NAME}:${env.BUILD_ID}")
+                    def image= docker.build("${IMAGE_NAME}")
                     //powershell 'docker build -t myworld:latest .'
                 }
             }
@@ -37,7 +47,7 @@ pipeline {
                     docker.withRegistry("https://${GITHUB_REGISTRY}", 'git-token') 
                     {
                         // Push the built image to GHCR
-                        docker.image("${IMAGE_NAME}:${env.BUILD_ID}").push()
+                        docker.image("${IMAGE_NAME}").push()
                     }
                 }
             }
@@ -47,7 +57,17 @@ pipeline {
 		 stage ('Helm Deploy') {
           steps {
             script {
-                 helm upgrade --install my-release ${HELM_CHART_NAME} --set myimage.reponame=${IMAGE_NAME} --set myimage.repotag=${env.BUILD_ID}
+                 // Ensure Kubernetes cluster context is set (if using different clusters)
+                   // bat "kubectl config use-context minikube"
+                   
+                    echo "KUBECONFIG is set to ${env.KUBECONFIG}"
+                    
+                  // Deploy the Docker image using Helm
+                    bat """
+                        helm upgrade --install ${HELM_RELEASE_NAME} ${CHART_PATH} \
+                            --namespace ${HELM_NAMESPACE} \
+                            --set myimage.myfullreponame=${IMAGE_NAME}
+                    """
                }
             }
         }
@@ -58,6 +78,7 @@ pipeline {
         always {
             // Clean workspace after build
             cleanWs()
+			bat "docker logout ${GITHUB_REGISTRY}"
         }
     }
 }

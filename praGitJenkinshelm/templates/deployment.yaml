@@ -14,9 +14,10 @@ spec:
     spec:
       containers:
       - name: {{ .Values.myimage.appcontainername }}
-        #image: "{{ .Values.myimage.myfullreponame }}"
-        image: "{{ .Values.myimage.reponame }}:{{ .Values.myimage.repotag }}"
+        image: "{{ .Values.myimage.myfullreponame }}"
+        #image: "{{ .Values.myimage.reponame }}:{{ .Values.myimage.repotag }}"
         imagePullPolicy: {{ .Values.myimage.Whentopullimage }}
         ports:
         - containerPort: {{ .Values.myimage.containerandtargetPort }}
-
+      imagePullSecrets:
+        - name: {{ .Values.myscret.myreposecretname }}
