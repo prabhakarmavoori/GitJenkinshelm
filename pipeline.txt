@@ -11,8 +11,9 @@ pipeline {
         
         HELM_RELEASE_NAME = 'prabhakar-release'
         HELM_NAMESPACE = 'default'
-        CHART_PATH = 'G:/Practise/GitJenkinshelm/praGitJenkinshelm'
-        
+		
+		//CHART_PATH = 'G:/Practise/GitJenkinshelm/praGitJenkinshelm'
+        CHART_PATH ="./praGitJenkinshelm/"
         KUBECONFIG = 'C:/Users/JANAKI PRIYA/.kube/config'
     }
 

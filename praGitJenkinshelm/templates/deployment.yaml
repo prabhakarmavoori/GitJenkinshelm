@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.appdeployname }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas:  {{ .Values.replicaCount }}
   selector:
@@ -20,4 +21,4 @@ spec:
         ports:
         - containerPort: {{ .Values.myimage.containerandtargetPort }}
       imagePullSecrets:
-        - name: {{ .Values.myscret.myreposecretname }}
+        - name: {{ .Release.Name }}-{{ .Values.myscret.myreposecretname }}
